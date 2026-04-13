@@ -1,4 +1,4 @@
-// src/app/login/page.tsx
+// app/login/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -27,16 +27,29 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Ошибка при входе');
+        // Показываем сообщение об ошибке от сервера или стандартное
+        setError(data.error || `Ошибка: ${res.status}`);
+        setLoading(false);
         return;
       }
 
-      // Успешный вход — редирект на дашборд
-      router.push('/dashboard');
-      router.refresh(); // Обновляем server components
+      // Успешный вход — выполняем редирект
+      console.log('Login successful, redirecting...');
+      
+      // Пробуем сначала через Next.js роутер
+      await router.push('/dashboard');
+      router.refresh();
+      
+      // Запасной вариант: если через 100 мс редиректа не произошло, используем window.location
+      setTimeout(() => {
+        if (window.location.pathname !== '/dashboard') {
+          window.location.href = '/dashboard';
+        }
+      }, 100);
+      
     } catch (err) {
-      setError('Ошибка сети. Попробуйте позже.');
-    } finally {
+      console.error('Login fetch error:', err);
+      setError('Ошибка сети. Проверьте соединение.');
       setLoading(false);
     }
   };
@@ -67,7 +80,9 @@ export default function LoginPage() {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
+              autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -81,7 +96,9 @@ export default function LoginPage() {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
+              autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}

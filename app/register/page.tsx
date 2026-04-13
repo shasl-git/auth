@@ -1,4 +1,4 @@
-// src/app/register/page.tsx
+// app/register/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -39,20 +39,31 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || 'Ошибка при регистрации');
+        setError(data.error || `Ошибка: ${res.status}`);
+        setLoading(false);
         return;
       }
 
-      // Успешная регистрация — редирект на дашборд
-      router.push('/dashboard');
+      console.log('Registration successful, redirecting...');
+      
+      // Редирект после успешной регистрации
+      await router.push('/dashboard');
       router.refresh();
+      
+      setTimeout(() => {
+        if (window.location.pathname !== '/dashboard') {
+          window.location.href = '/dashboard';
+        }
+      }, 100);
+      
     } catch (err) {
-      setError('Ошибка сети. Попробуйте позже.');
-    } finally {
+      console.error('Registration fetch error:', err);
+      setError('Ошибка сети. Проверьте соединение.');
       setLoading(false);
     }
   };
 
+  // ... остальной JSX такой же, как в login, но с полем confirmPassword и текстом "Регистрация"
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow">
@@ -79,7 +90,9 @@ export default function RegisterPage() {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
+              autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -93,7 +106,9 @@ export default function RegisterPage() {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
+              autoComplete="new-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -107,7 +122,9 @@ export default function RegisterPage() {
             </label>
             <input
               id="confirmPassword"
+              name="confirmPassword"
               type="password"
+              autoComplete="off"
               required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
