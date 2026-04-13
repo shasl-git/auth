@@ -1,4 +1,4 @@
-// app/login/page.tsx
+// app/login/page.tsx - ПОЛНОСТЬЮ ЗАМЕНИ НА ЭТОТ КОД
 'use client';
 
 import { useState } from 'react';
@@ -27,25 +27,21 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        // Показываем сообщение об ошибке от сервера или стандартное
         setError(data.error || `Ошибка: ${res.status}`);
         setLoading(false);
         return;
       }
 
-      // Успешный вход — выполняем редирект
-      console.log('Login successful, redirecting...');
+      // ========== НОВЫЙ КОД ДЛЯ ПРОВЕРКИ ==========
+      console.log('Login response:', data);
+      console.log('Cookies after login:', document.cookie);
       
-      // Пробуем сначала через Next.js роутер
-      await router.push('/dashboard');
-      router.refresh();
-      
-      // Запасной вариант: если через 100 мс редиректа не произошло, используем window.location
-      setTimeout(() => {
-        if (window.location.pathname !== '/dashboard') {
-          window.location.href = '/dashboard';
-        }
-      }, 100);
+      // Временно используем window.location для теста
+      window.location.href = '/dashboard';
+      // Старый код пока закомментировали для проверки
+      // await router.push('/dashboard');
+      // router.refresh();
+      // ==========================================
       
     } catch (err) {
       console.error('Login fetch error:', err);

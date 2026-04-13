@@ -1,4 +1,3 @@
-// src/app/api/auth/login/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyCredentials } from '@/lib/db';
 import { createSessionToken } from '@/lib/auth';
@@ -15,7 +14,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Проверяем учётные данные
     const user = await verifyCredentials(email, password);
     
     if (!user) {
@@ -25,7 +23,6 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Создаём токен
     const token = createSessionToken(user);
     
     const response = NextResponse.json(
@@ -33,12 +30,13 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
     
-    response.cookies.set('session', token, {
+    response.cookies.set({
+      name: 'session',
+      value: token,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7,
       path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+      sameSite: 'lax',
     });
     
     return response;
