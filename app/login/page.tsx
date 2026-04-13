@@ -1,4 +1,3 @@
-// app/login/page.tsx - ПОЛНОСТЬЮ ЗАМЕНИ НА ЭТОТ КОД
 'use client';
 
 import { useState } from 'react';
@@ -27,25 +26,19 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || `Ошибка: ${res.status}`);
+        setError(data.error || 'Ошибка при входе');
         setLoading(false);
         return;
       }
 
-      // ========== НОВЫЙ КОД ДЛЯ ПРОВЕРКИ ==========
-      console.log('Login response:', data);
-      console.log('Cookies after login:', document.cookie);
-      
-      // Временно используем window.location для теста
-      window.location.href = '/dashboard';
-      // Старый код пока закомментировали для проверки
-      // await router.push('/dashboard');
-      // router.refresh();
-      // ==========================================
+      // Успешный вход — используем router.push
+      console.log('Login successful');
+      router.push('/dashboard');
+      router.refresh();
       
     } catch (err) {
-      console.error('Login fetch error:', err);
-      setError('Ошибка сети. Проверьте соединение.');
+      console.error('Login error:', err);
+      setError('Ошибка сети. Попробуйте позже.');
       setLoading(false);
     }
   };
@@ -76,9 +69,7 @@ export default function LoginPage() {
             </label>
             <input
               id="email"
-              name="email"
               type="email"
-              autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -92,9 +83,7 @@ export default function LoginPage() {
             </label>
             <input
               id="password"
-              name="password"
               type="password"
-              autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
